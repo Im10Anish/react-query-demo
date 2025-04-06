@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import ClientProvider from "../app/providers/queryClient";
+import QueryProvider from "../app/providers/queryClient";
 import "./globals.css";
 
 const inter = Inter({
@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ClientProvider>{children}</ClientProvider>
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );

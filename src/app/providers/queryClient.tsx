@@ -7,6 +7,7 @@ import {
   MutationCache,
 } from "@tanstack/react-query";
 import { lazy, Suspense, useEffect, useState } from "react";
+import OfflineIndicator from "@/app/components/OfflineIndicator";
 
 declare global {
   interface Window {
@@ -68,6 +69,7 @@ export default function QueryProvider({
   return (
     <QueryClientProvider client={queryClient}>
       {children}
+      <OfflineIndicator />
       <ReactQueryDevtools initialIsOpen />
       {showDevtools && (
         <Suspense fallback={null}>

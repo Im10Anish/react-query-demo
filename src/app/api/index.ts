@@ -62,8 +62,9 @@ export const updatePost = async (
   return response.data;
 };
 
-export const deletePost = async (postId: number): Promise<void> => {
+export const deletePost = async (postId: number): Promise<number> => {
   await apiClient.delete(`/posts/${postId}`);
+  return postId;
 };
 
 // Users API

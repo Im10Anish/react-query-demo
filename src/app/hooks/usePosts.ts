@@ -1,6 +1,11 @@
 import type { PaginatedResponse, Post } from "@/app/types";
 import { getPosts, deletePost } from "@/app/api";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 
 export const postKeys = {
   all: ["posts"] as const,
@@ -13,6 +18,12 @@ export const postKeys = {
   }) => [...postKeys.lists(), filters] as const,
   details: () => [...postKeys.all, "detail"] as const,
   detail: (postId: number) => [...postKeys.details(), postId] as const,
+  infinite: () => [...postKeys.all, "infinite"] as const,
+  infiniteList: (filters: {
+    limit?: number;
+    search?: string;
+    userId?: number;
+  }) => [...postKeys.infinite(), filters] as const,
 };
 
 export const usePosts = (
@@ -90,5 +101,25 @@ export const useDeletePost = () => {
       queryClient.removeQueries({ queryKey: postKeys.detail(postId) });
       queryClient.invalidateQueries({ queryKey: postKeys.lists() });
     },
+  });
+};
+
+export const useInfinitePosts = (
+  limit: number = 10,
+  search: string = "",
+  userId?: number,
+  enabled: boolean = true
+) => {
+  return useInfiniteQuery<PaginatedResponse<Post>, Error>({
+    queryKey: postKeys.infiniteList({ limit, search, userId }),
+    queryFn: ({ pageParam = 1 }) =>
+      getPosts(pageParam as number, limit, search, userId),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const { page, limit, totalCount } = lastPage;
+      const totalPages = Math.ceil(totalCount / limit);
+      return page < totalPages ? page + 1 : undefined;
+    },
+    enabled,
   });
 };

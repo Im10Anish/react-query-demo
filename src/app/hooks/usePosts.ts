@@ -1,5 +1,5 @@
 import type { PaginatedResponse, Post } from "@/app/types";
-import { getPosts, deletePost } from "@/app/api";
+import { getPosts, deletePost, createPost } from "@/app/api";
 import {
   useQuery,
   useMutation,
@@ -121,5 +121,15 @@ export const useInfinitePosts = (
       return page < totalPages ? page + 1 : undefined;
     },
     enabled,
+  });
+};
+
+export const useCreatePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (post: Omit<Post, "id">) => createPost(post),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+    },
   });
 };
